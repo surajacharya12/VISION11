@@ -162,6 +162,33 @@ downloaded from the [Roboflow Universe](https://universe.roboflow.com/).
     bash -lc "pip install -r ../requirements.txt && python3 main.py --source_video_path ../data/2e57b9_0.mp4 --target_video_path ../data/2e57b9_0-radar.mp4 --device cpu --mode RADAR --docker"
   ```
 
+- `POSSESSION` - Tracks match ball possession times and percentages for both teams, displaying them on a custom semi-transparent card overlay.
+
+  ```bash
+  # Local
+  python3 main.py --source_video_path ../data/2e57b9_0.mp4 \
+    --target_video_path ../data/2e57b9_0-possession.mp4 \
+    --device mps --mode POSSESSION
+  ```
+
+- `PASSES` - Tracks the number of completed passes for both teams, displaying them on a custom semi-transparent card overlay.
+
+  ```bash
+  # Local
+  python3 main.py --source_video_path ../data/2e57b9_0.mp4 \
+    --target_video_path ../data/2e57b9_0-passes.mp4 \
+    --device mps --mode PASSES
+  ```
+
+- `POSSESSION_AND_PASSES` - Tracks both ball possession percentages and completed pass counts for both teams, displaying them together on a unified custom card.
+
+  ```bash
+  # Local
+  python3 main.py --source_video_path ../data/2e57b9_0.mp4 \
+    --target_video_path ../data/2e57b9_0-possession-and-passes.mp4 \
+    --device mps --mode POSSESSION_AND_PASSES
+  ```
+
 ## 🗺️ roadmap
 
 - [ ] Add smoothing to eliminate flickering in RADAR mode.
