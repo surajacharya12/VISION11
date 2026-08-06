@@ -149,7 +149,7 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* ── AI ANALYSIS CTA ── */}
+      {/* ── MATCH TACTICAL STUDIO CTA ── */}
       <Link
         href="/AiAnalysis"
         className="group relative block overflow-hidden rounded-[2rem] border border-indigo-500/20 bg-gradient-to-br from-[#0f1423] to-[#1e1b4b]/40 p-6 shadow-xl transition-all duration-500 hover:border-indigo-500/40 hover:shadow-indigo-500/10"
@@ -158,23 +158,23 @@ export default function Home() {
         
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-indigo-400/30 bg-gradient-to-b from-indigo-500/20 to-indigo-500/5 shadow-inner transition-transform group-hover:scale-105">
-              <UploadCloud className="h-7 w-7 text-indigo-400" />
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-emerald-400/30 bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 shadow-inner transition-transform group-hover:scale-105">
+              <UploadCloud className="h-7 w-7 text-emerald-400" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1.5">
-                <h3 className="text-lg font-bold text-white tracking-wide">Vision AI Analyst</h3>
-                <span className="flex items-center gap-1 rounded bg-indigo-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-indigo-300 border border-indigo-500/20">
-                  <Sparkles className="h-2.5 w-2.5" /> Beta
+                <h3 className="text-lg font-bold text-white tracking-wide">Match Tactical Studio</h3>
+                <span className="flex items-center gap-1 rounded bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-emerald-300 border border-emerald-500/20">
+                  <Sparkles className="h-2.5 w-2.5" /> Video Analytics
                 </span>
               </div>
-              <p className="text-xs md:text-sm text-indigo-200/70 leading-relaxed max-w-[400px]">
-                Upload match footage or tactical clips to instantly generate heatmaps, player tracking, and tactical blueprints using our proprietary AI model.
+              <p className="text-xs md:text-sm text-slate-300/80 leading-relaxed max-w-[400px]">
+                Upload match video clips to generate real-time 2D tactical radar pitches, spatial activity heatmaps, player tracking, and possession statistics.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors ml-14 md:ml-0">
-            Launch Engine <ArrowRight className="w-4 h-4" />
+          <div className="flex items-center gap-2 text-sm font-bold text-emerald-400 group-hover:text-emerald-300 transition-colors ml-14 md:ml-0">
+            Open Tactical Studio <ArrowRight className="w-4 h-4" />
           </div>
         </div>
       </Link>

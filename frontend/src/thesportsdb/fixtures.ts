@@ -1,4 +1,4 @@
-import { theSportsDBGetV1 } from "./client";
+import { theSportsDBGetV1, type RequestOptions } from "./client";
 import type { QueryParams, TheSportsDBResponse, TheSportsDBEvent } from "./types";
 
 export interface FixtureEvent {
@@ -164,7 +164,7 @@ async function discoverFootballLeagues(options?: RequestOptions): Promise<string
     if (end - start > 1) rangeEndpoints.push(String(end - 1));
   }
 
-  const baseCandidates = [...new Set([...curated, ...rangeEndpoints])];
+  const baseCandidates = Array.from(new Set([...curated, ...rangeEndpoints]));
 
   const results: string[] = [];
   const checked = new Set<string>();

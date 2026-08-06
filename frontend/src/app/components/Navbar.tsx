@@ -54,7 +54,7 @@ const NAV_LINKS = [
   { label: "Teams", href: "/teams" },
   { label: "Players", href: "/players" },
   { label: "Live Football", href: "/Livestreamplayer" },
-  { label: "AI Analysis", href: "/AiAnalysis" },
+  { label: "Tactical Studio", href: "/AiAnalysis" },
 ];
 
 /* ─── Quick-Links dropdown (desktop) ───────────────────── */

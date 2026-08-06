@@ -26,7 +26,7 @@ export default async function TeamDetailPage({ params, searchParams }: PageProps
 
         team = detailsRes?.data ?? null;
         if (!team) {
-            team = statsRes?.team ?? null;
+            team = (statsRes as any)?.team ?? null;
         }
 
         fdTeamDetails = detailsRes?.data ?? null;
@@ -56,6 +56,9 @@ export default async function TeamDetailPage({ params, searchParams }: PageProps
                         fdStats={fdStats}
                         fdTeamDetails={fdTeamDetails}
                         opponent={searchParams?.opponent || ""}
+                        previousEvents={[]}
+                        nextEvents={[]}
+                        h2hMatches={[]}
                     />
                 ) : null}
             </div>

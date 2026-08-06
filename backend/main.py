@@ -1,6 +1,10 @@
 import os
 import shutil
+# pyrefly: ignore [missing-import]
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+# pyrefly: ignore [missing-import]
+from fastapi.middleware.cors import CORSMiddleware
+# pyrefly: ignore [missing-import]
 from fastapi.responses import FileResponse, JSONResponse
 from uuid import uuid4
 
@@ -8,49 +12,66 @@ from analysis import analyze_video, Mode
 
 app = FastAPI(title="Video Analysis API")
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ANALYSIS_VIDEO_DIR = os.path.join(PROJECT_ROOT, "analysisvideo")
-TEMP_VIDEO_DIR = os.path.join(PROJECT_ROOT, "temp_uploads")
+# Enable CORS for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-os.makedirs(ANALYSIS_VIDEO_DIR, exist_ok=True)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMP_VIDEO_DIR = os.path.join(PROJECT_ROOT, "temp_uploads")
+ANALYSIS_VIDEO_DIR = os.path.join(PROJECT_ROOT, "analysisvideo")
+DATA_DIR = os.path.join(PROJECT_ROOT, "sports_football", "data")
+
 os.makedirs(TEMP_VIDEO_DIR, exist_ok=True)
+os.makedirs(ANALYSIS_VIDEO_DIR, exist_ok=True)
 
 
 @app.post("/api/analyze")
 async def analyze(
     mode: str = Form("PLAYER_DETECTION"),
     device: str = Form("cpu"),
-    video: UploadFile = File(...)
+    video: UploadFile | None = File(None),
+    preset_name: str | None = Form(None),
 ):
     """
-    Upload a video and perform analysis.
-    Supported modes: PITCH_DETECTION, PLAYER_DETECTION, BALL_DETECTION, PLAYER_TRACKING, TEAM_CLASSIFICATION, RADAR, HEATMAP
+    Upload a video or specify a preset video and perform analysis.
+    Output analyzed video is saved into temp_uploads.
     """
-    if not video.filename:
-        raise HTTPException(status_code=400, detail="No video file provided.")
-
     valid_modes = [m.value for m in Mode]
     if mode not in valid_modes:
         raise HTTPException(status_code=400, detail=f"Invalid mode. Valid modes are: {', '.join(valid_modes)}")
 
     video_id = str(uuid4())
-    ext = os.path.splitext(video.filename)[1]
-    if not ext:
-        ext = ".mp4"
-    
-    source_filename = f"{video_id}_source{ext}"
-    target_filename = f"{video_id}_{mode}_output{ext}"
-    
-    source_path = os.path.join(TEMP_VIDEO_DIR, source_filename)
-    target_path = os.path.join(ANALYSIS_VIDEO_DIR, target_filename)
+    is_uploaded = False
+    source_path = None
 
-    # Save uploaded file
-    try:
-        with open(source_path, "wb") as buffer:
-            shutil.copyfileobj(video.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save video: {str(e)}")
-    
+    if video and video.filename:
+        ext = os.path.splitext(video.filename)[1] or ".mp4"
+        source_filename = f"{video_id}_source{ext}"
+        source_path = os.path.join(TEMP_VIDEO_DIR, source_filename)
+        is_uploaded = True
+        try:
+            with open(source_path, "wb") as buffer:
+                shutil.copyfileobj(video.file, buffer)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to save uploaded video: {str(e)}")
+    elif preset_name:
+        preset_path = os.path.join(DATA_DIR, preset_name)
+        if not os.path.exists(preset_path):
+            preset_path = os.path.join(TEMP_VIDEO_DIR, preset_name)
+        if not os.path.exists(preset_path):
+            raise HTTPException(status_code=404, detail=f"Preset video '{preset_name}' not found.")
+        source_path = preset_path
+    else:
+        raise HTTPException(status_code=400, detail="No video file or preset provided.")
+
+    target_filename = f"{video_id}_{mode}_output.mp4"
+    target_path = os.path.join(TEMP_VIDEO_DIR, target_filename)
+
     # Process video
     try:
         analyze_video(
@@ -62,9 +83,11 @@ async def analyze(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
     finally:
-        # Cleanup temp file
-        if os.path.exists(source_path):
-            os.remove(source_path)
+        if is_uploaded and source_path and os.path.exists(source_path):
+            try:
+                os.remove(source_path)
+            except Exception:
+                pass
 
     return JSONResponse(status_code=200, content={
         "message": "Analysis completed successfully.",
@@ -74,11 +97,14 @@ async def analyze(
 
 @app.get("/api/download/{filename}")
 async def download_video(filename: str):
-    file_path = os.path.join(ANALYSIS_VIDEO_DIR, filename)
+    file_path = os.path.join(TEMP_VIDEO_DIR, filename)
+    if not os.path.exists(file_path):
+        file_path = os.path.join(ANALYSIS_VIDEO_DIR, filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File not found")
-    return FileResponse(file_path)
+    return FileResponse(file_path, media_type="video/mp4", filename=filename)
 
 if __name__ == "__main__":
+    # pyrefly: ignore [missing-import]
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

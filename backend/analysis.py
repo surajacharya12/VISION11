@@ -4,7 +4,9 @@ import sys
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(PROJECT_ROOT, "sports_football"))
 
+# pyrefly: ignore [missing-import]
 import torch
+# pyrefly: ignore [missing-import]
 import ultralytics.nn.tasks
 
 # Patch torch.load to avoid PyTorch 2.6 WeightsUnpickler errors for Ultralytics models
@@ -15,7 +17,9 @@ def _patched_load(*args, **kwargs):
     return _original_load(*args, **kwargs)
 torch.load = _patched_load
 
+# pyrefly: ignore [missing-import]
 import supervision as sv
+# pyrefly: ignore [missing-import]
 from soccer.main import (
     Mode,
     run_pitch_detection,
@@ -24,7 +28,8 @@ from soccer.main import (
     run_player_tracking,
     run_team_classification,
     run_radar,
-    run_heatmap
+    run_heatmap,
+    run_possession_and_passes
 )
 
 def analyze_video(source_video_path: str, target_video_path: str, device: str, mode: str) -> None:
@@ -54,10 +59,26 @@ def analyze_video(source_video_path: str, target_video_path: str, device: str, m
     elif enum_mode == Mode.HEATMAP:
         frame_generator = run_heatmap(
             source_video_path=source_video_path, device=device)
+    elif enum_mode == Mode.POSSESSION:
+        frame_generator = run_possession_and_passes(
+            source_video_path=source_video_path, device=device, show_possession=True, show_passes=False)
+    elif enum_mode == Mode.PASSES:
+        frame_generator = run_possession_and_passes(
+            source_video_path=source_video_path, device=device, show_possession=False, show_passes=True)
+    elif enum_mode == Mode.POSSESSION_AND_PASSES:
+        frame_generator = run_possession_and_passes(
+            source_video_path=source_video_path, device=device, show_possession=True, show_passes=True)
     else:
         raise NotImplementedError(f"Mode {enum_mode} is not implemented.")
 
     video_info = sv.VideoInfo.from_video_path(source_video_path)
-    with sv.VideoSink(target_video_path, video_info) as sink:
-        for frame in frame_generator:
-            sink.write_frame(frame)
+    with sv.VideoSink(target_video_path, video_info, codec='avc1') as sink:
+        frame_count = 0
+        try:
+            for frame in frame_generator:
+                sink.write_frame(frame)
+                frame_count += 1
+        except Exception as e:
+            print(f"Error processing frame {frame_count}: {e}")
+            raise
+        print(f"Processed {frame_count} frames")
