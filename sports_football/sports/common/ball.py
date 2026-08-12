@@ -1,8 +1,17 @@
 from collections import deque
 
 import cv2
+import matplotlib
+import matplotlib.cm as cm
 import numpy as np
 import supervision as sv
+
+
+def _create_jet_palette(color_count: int) -> sv.ColorPalette:
+    cmap = matplotlib.colormaps['jet']
+    colors = cmap(np.linspace(0, 1, color_count))
+    sv_colors = [sv.Color(int(r * 255), int(g * 255), int(b * 255)) for r, g, b, _ in colors]
+    return sv.ColorPalette(colors=sv_colors)
 
 
 class BallAnnotator:
@@ -17,8 +26,7 @@ class BallAnnotator:
     """
 
     def __init__(self, radius: int, buffer_size: int = 5, thickness: int = 2):
-
-        self.color_palette = sv.ColorPalette.from_matplotlib('jet', buffer_size)
+        self.color_palette = _create_jet_palette(buffer_size)
         self.buffer = deque(maxlen=buffer_size)
         self.radius = radius
         self.thickness = thickness

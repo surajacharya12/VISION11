@@ -382,7 +382,7 @@ def run_possession_and_passes(
 
     slicer = sv.InferenceSlicer(
         callback=ball_callback,
-        overlap_filter=sv.OverlapFilter.NONE,
+        overlap_filter_strategy=sv.OverlapFilter.NONE,
         slice_wh=(640, 640),
     )
 
@@ -622,7 +622,7 @@ def run_ball_detection(source_video_path: str, device: str) -> Iterator[np.ndarr
 
     slicer = sv.InferenceSlicer(
         callback=callback,
-        overlap_filter=sv.OverlapFilter.NONE,
+        overlap_filter_strategy=sv.OverlapFilter.NONE,
         slice_wh=(640, 640),
     )
 
