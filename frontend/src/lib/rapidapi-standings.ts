@@ -44,8 +44,8 @@ export interface NormalizedStandingRow {
   qualColor?: string | null;
 }
 
-const RAPIDAPI_HOST = "free-api-live-football-data.p.rapidapi.com";
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || "b9e1995c5dmsh8776c46a3e37532p1532cajsn50ef5049ac83";
+const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST || "free-api-live-football-data.p.rapidapi.com";
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || "a9d59ff3bamsh8d3caccd5dc111bp192953jsn240499919a52";
 
 export type StandingType = "all" | "home" | "away";
 
